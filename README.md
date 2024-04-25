@@ -21,11 +21,11 @@ The structure of the repository is as follows:
 
 ## Usage
 
-Some general steps of how to use the toolkit. Prerequisites: 
-
+Prerequisites: 
 - python : `python3`, `sage` and install `pycryptodome` via `pip`.
 - C++ : `gmp`, `ntl` and `make`.
 
+Some general steps of how to use the toolkit.
 
 ### Step 1 Extract key information
 

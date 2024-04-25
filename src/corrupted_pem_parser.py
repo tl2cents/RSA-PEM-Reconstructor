@@ -438,7 +438,6 @@ def gen_leaks_dict_for_sage_solver(key_info):
 
 if __name__ == "__main__":
     key_infos = list(pasrse_keyinfo_heuristic("./sparse.pem", verbose=False))
-    # key_infos = list(pasrse_keyinfo_heruistic("./damaged_key.key", verbose=False))
     print(f"[+] found {len(key_infos)} leaks model")
     for key_info in key_infos:
         n = key_info['n']
