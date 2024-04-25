@@ -1,7 +1,7 @@
 
 A toolkit for reconstructing the RSA private key from a corrupted pem file. The toolkit is written in pure Python and uses the sage-based library for the RSA key reconstruction. Also, I include a modified version of the open source `C++` project [Reconstructing RSA Private Keys from Random Key Bits](https://hovav.net/ucsd/papers/hs09.html) in [rsa-bits](./rsa-bits/) which is easy to use with the scripts provided.
 
-Before using the toolkit, the corrupted pem file must contains the complete information of the rsa public key i.e. the modulus `n` and the public exponent `e`. If not, we must fix the corrupted pem file first with your public key information first. 
+Before using the toolkit, the corrupted pem file must contains the complete information of the rsa public key i.e. the modulus `n` and the public exponent `e`. If not, we must fix the corrupted pem file first with public key information first. 
 
 
 
@@ -10,7 +10,10 @@ Before using the toolkit, the corrupted pem file must contains the complete info
 
 The structure of the repository is as follows:
 
-- [src](./src/): [corrupted_pem_parser.py](./src/corrupted_pem_parser.py) can extract all information of $p,q,d,d_p,d_q$ from the corrupted pem file. [reconstruct_rsa_priv.py](./src/reconstruct_rsa_priv.py) can reconstruct the rsa private key from the extracted information based on the sage library which is a python implementation of the open source project [Reconstructing RSA Private Keys from Random Key Bits](https://hovav.net/ucsd/papers/hs09.html).
+- [src](./src/): 
+  - [corrupted_pem_parser.py](./src/corrupted_pem_parser.py): extract all information of $p,q,d,d_p,d_q$ from the corrupted pem file. 
+  - [reconstruct_rsa_priv.py](./src/reconstruct_rsa_priv.py): reconstruct the rsa private key from the extracted information based on the sage library. A python implementation of the open source project [Reconstructing RSA Private Keys from Random Key Bits](https://hovav.net/ucsd/papers/hs09.html).
+  - [copper_partial_p.py](./src/copper_partial_p.py): factor the modulus $n$ with the partial leaks (least significant bits) of $p$ using the coppersmith method.
 - [rsa-bits](./rsa-bits/): modified version of the open source `C++` project [Reconstructing RSA Private Keys from Random Key Bits](https://hovav.net/ucsd/papers/hs09.html). I add two extra parameters `-c C -q Q` to output the consistent information (least significant bits) of $p,q,d,d_p,d_q$ if coppersmith's method can be used. **Thus, we can handle the case that the leaked bits are not evenly distributed which is not considered in the original project.**
 - [challenges](./challenges/): two CTF challengs from 2023-CTF-Zone and 2024-Geekcon CTF and the corresponding solvers.
 
