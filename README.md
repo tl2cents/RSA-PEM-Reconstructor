@@ -1,10 +1,8 @@
 
-A toolkit for reconstructing the RSA private key from a corrupted pem file. The toolkit is written in pure Python and uses the sage-based library for the RSA key reconstruction. Also, I include a modified version of the open source `C++` project [Reconstructing RSA Private Keys from Random Key Bits](https://hovav.net/ucsd/papers/hs09.html) in [rsa-bits](./rsa-bits/) which is easy to use with the scripts provided.
 
-Before using the toolkit, the corrupted pem file must contains the complete information of the rsa public key i.e. the modulus `n` and the public exponent `e`. If not, we must fix the corrupted pem file first with public key information first. 
+A toolkit for reconstructing RSA private keys from corrupted PEM files. This toolkit is implemented in pure Python and leverages a SageMath-based library for RSA key reconstruction. Additionally, it includes a modified version of the open-source C++ project [*Reconstructing RSA Private Keys from Random Key Bits*](https://hovav.net/ucsd/papers/hs09.html) (located in the [`rsa-bits`](./rsa-bits/) directory), integrated for ease of use via the provided Python scripts.
 
-
-
+Before using the toolkit, the corrupted PEM file must contain the full RSA public key information—specifically, the modulus `n` and the public exponent `e`. If this information is missing or corrupted, the PEM file must first be repaired to include a valid public key.
 
 ## Structure
 
@@ -15,7 +13,7 @@ The structure of the repository is as follows:
   - [reconstruct_rsa_priv.py](./src/reconstruct_rsa_priv.py): reconstruct the rsa private key from the extracted information based on the sage library. A python implementation of the open source project [Reconstructing RSA Private Keys from Random Key Bits](https://hovav.net/ucsd/papers/hs09.html).
   - [copper_partial_p.py](./src/copper_partial_p.py): factor the modulus $n$ with the partial leaks (least significant bits) of $p$ using the coppersmith method.
 - [rsa-bits](./rsa-bits/): modified version of the open source `C++` project [Reconstructing RSA Private Keys from Random Key Bits](https://hovav.net/ucsd/papers/hs09.html). I add two extra parameters `-c C -q Q` to output the consistent information (least significant bits) of $p,q,d,d_p,d_q$ if coppersmith's method can be used. **Thus, we can handle the case that the leaked bits are not evenly distributed which is not considered in the original project.**
-- [challenges](./challenges/): two CTF challengs from 2023-CTF-Zone and 2024-Geekcon CTF and the corresponding solvers.
+- [challenges](./challenges/): two CTF challenges from 2023-CTF-Zone and 2024-Geekcon CTF and the corresponding solvers.
 
 
 
@@ -42,9 +40,9 @@ for key_info in key_infos:
 The output is a list of possible private key information dictionaries and there are usually up to 4 dictionaries. Then we can generate inputs for [rsa-bits](./rsa-bits/) and [reconstruct_rsa_priv.py](./src/reconstruct_rsa_priv.py).
 
 ```python 
-from corrupted_pem_parser import pasrse_keyinfo_heuristic, evaluate_key_leaks
+from corrupted_pem_parser import parse_keyinfo_heuristic, evaluate_key_leaks
 from corrupted_pem_parser import gen_inputs_for_rsabits, gen_leaks_dict_for_sage_solver
-key_infos = list(pasrse_keyinfo_heuristic("corrupted.pem", verbose=False))
+key_infos = list(parse_keyinfo_heuristic("corrupted.pem", verbose=False))
 
 for key_info in key_infos:
     n = key_info['n']
@@ -181,15 +179,12 @@ Then we can extract the `Integer` and all other type data in this way. What's mo
 This part is based on the paper [Reconstructing RSA Private Keys from Random Key Bits](https://hovav.net/ucsd/papers/hs09.html). Given random bits of RSA private key : $p,q,d,d_p,d_q$ , we can reconstruct RSA private keys. Parameters bound （ **e must be small**, i.e. less than 32 bits）:
 
 - $p,q$ random leak : 57% bits is required. ([Factor from random bits of p,q](https://github.com/y011d4/factor-from-random-known-bits))
-- $p,q,d$ random leak ：42% bits is re required. (祥云杯 2022 leak rsa)
+- $p,q,d$ random leak：42% bits is re required. (祥云杯 2022 leak rsa)
 - $p,q,d,d_p,d_q$​ random leak ：27% bits is re required. (Plaid CTF 2014 rsa)
 
+The core idea is to prune the search space of the RSA private key by leveraging known bit values and the mathematical relationships among $n, p, q, d, d_p, d_q$. The search is conducted from the least significant bits (LSBs) to the most significant bits (MSBs). For further details, please refer to the original paper or my implementation in a separate repository: [Implementation-of-Cryptographic-Attacks](https://github.com/tl2cents/Implementation-of-Cryptographic-Attacks/tree/main/ReconstructingRSA).
 
-
-The idea is to prune the search space of the private key by using the known bits and equations among $n, p, q, d, d_p, d_q$ and search from the least significant bits to the most significant bits. For more details, please refer to the paper or my detailed implementation in another repository [Implementation-of-Cryptographic-Attacks](https://github.com/tl2cents/Implementation-of-Cryptographic-Attacks/tree/main/ReconstructingRSA).
-
-What I want to emphasize is that the leaked bits are not evenly distributed in some cases but are concentrated in the least significant bits. In this case, we can recover the enough least significant bits of the prime and use the coppersmith method to recover the private key. For example, the challenge [GEEKCON-2024-Sparse](./challenges/sparse.pem) is such a case.
-
+It is important to highlight that in some cases, the leaked bits are not uniformly distributed but are instead concentrated in the least significant portion of the primes. In such scenarios, it is possible to recover a sufficient number of LSBs and then apply Coppersmith’s method to reconstruct the full private key. One such example is the challenge [GEEKCON-2024-Sparse](./challenges/sparse.pem), where this approach proves effective.
 
 
 ## Examples & Challenges

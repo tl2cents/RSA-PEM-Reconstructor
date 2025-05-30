@@ -280,7 +280,7 @@ def check_intbytes_consitency(header:str, byte_len:int):
             return False
     return True
 
-def pasrse_keyinfo_heuristic(path:str, min_nbits:int=1024, verbose:bool=True):
+def parse_keyinfo_heuristic(path:str, min_nbits:int=1024, verbose:bool=True):
     """parse integer from corrupted ASN.1 DER encoded pem file
     Args:
         data (str): binary data
@@ -353,7 +353,7 @@ def pasrse_keyinfo_heuristic(path:str, min_nbits:int=1024, verbose:bool=True):
 def check_heruistic_parser(path):
     # test heruistic parser
     print("[+] start to check correctness for complete pem file")
-    key_info = pasrse_keyinfo_heuristic(path)
+    key_info = parse_keyinfo_heuristic(path)
     n = key_info['n']
     e = int(key_info['e'], 2)
     d = int(key_info['d'], 2)
@@ -437,7 +437,7 @@ def gen_leaks_dict_for_sage_solver(key_info):
     
 
 if __name__ == "__main__":
-    key_infos = list(pasrse_keyinfo_heuristic("./sparse.pem", verbose=False))
+    key_infos = list(parse_keyinfo_heuristic("./sparse.pem", verbose=False))
     print(f"[+] found {len(key_infos)} leaks model")
     for key_info in key_infos:
         n = key_info['n']
